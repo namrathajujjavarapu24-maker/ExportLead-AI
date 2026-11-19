@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExportLead AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">ExportLead <span>AI</span></div>
+    <nav id="nav">
+      <button data-view="dashboard" class="active">📊 Dashboard</button>
+      <button data-view="discover">🔎 Discover Buyers</button>
+      <button data-view="leads">👥 Manage Leads</button>
+      <button data-view="validation">✅ Email Validation</button>
+      <button data-view="classification">🤖 AI Classification</button>
+      <button data-view="marketing">✉️ Email Marketing</button>
+      <button data-view="importexport">📁 Import / Export</button>
+      <button data-view="reports">📈 Reports</button>
+    </nav>
+    <div class="sidebar-foot">Front-end demo · data stays in your browser</div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+      <h1 id="pageTitle">Dashboard</h1>
+      <button class="btn btn-primary" id="addLeadTop">+ Add Lead</button>
+    </header>
+    <div id="toasts"></div>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="notice" id="sampleNotice" hidden></div>
+        <div class="cards" id="statCards"></div>
+        <div class="grid-2">
+          <div class="card"><h2>Leads by Country</h2><div id="dashCountry"></div></div>
+          <div class="card"><h2>Leads by Buyer Category</h2><div id="dashCategory"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Recent Leads</h2>
+            <select id="dashFilter"><option value="">All countries</option></select></div>
+          <div class="table-wrap"><table id="dashTable"></table></div>
+        </div>
+      </section>
+
+      <!-- DISCOVER -->
+      <section class="view" id="view-discover" hidden>
+        <div class="card">
+          <h2>Find potential buyers</h2>
+          <form id="discoverForm" class="form-grid">
+            <label>Product name *<input id="dProduct" placeholder="e.g. Singing Bowls" required></label>
+            <label>Target country<input id="dCountry" placeholder="e.g. United States"></label>
+            <label>State<input id="dState" placeholder="e.g. California"></label>
+            <label>City<input id="dCity" placeholder="e.g. Los Angeles"></label>
+            <label>Buyer category<select id="dCategory"></select></label>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">Build search links</button></div>
+          </form>
+          <p class="muted small">This builds search links to public sources. Open a link, read the public business details (About Us / Contact Us), then save the lead. Nothing is scraped.</p>
+        </div>
+        <div id="discoverResult"></div>
+      </section>
+
+      <!-- LEADS -->
+      <section class="view" id="view-leads" hidden>
+        <div class="card">
+          <div class="filters">
+            <input type="search" id="fQ" placeholder="Search name, company, email, city, product…">
+            <select id="fCountry"><option value="">All countries</option></select>
+            <select id="fCategory"><option value="">All categories</option></select>
+            <select id="fStatus"><option value="">All statuses</option></select>
+            <select id="fEmail"><option value="">Any email status</option>
+              <option>Valid format</option><option>Invalid format</option><option>No email</option></select>
+            <select id="fData"><option value="">Sample + real</option><option value="sample">Sample only</option><option value="real">Real only</option></select>
+            <button class="btn" id="fClear">Clear</button>
+          </div>
+          <p class="muted small" id="leadCount"></p>
+          <div class="table-wrap"><table id="leadTable"></table></div>
+        </div>
+      </section>
+
+      <!-- VALIDATION -->
+      <section class="view" id="view-validation" hidden>
+        <div class="card">
+          <h2>Check an email</h2>
+          <div class="filters"><input id="vInput" type="text" placeholder="name@company.com">
+            <button class="btn btn-primary" id="vCheck">Validate</button><span id="vResult"></span></div>
+          <p class="muted small">Format validation only checks that the address is written correctly. It does not prove the mailbox exists or that an email will be delivered.</p>
+        </div>
+        <div class="card"><h2>Saved lead emails</h2><div class="table-wrap"><table id="validationTable"></table></div></div>
+      </section>
+
+      <!-- CLASSIFICATION -->
+      <section class="view" id="view-classification" hidden>
+        <div class="card">
+          <h2>Classify buyers</h2>
+          <p class="muted small">Labelled <strong>Rule-based (not AI)</strong>. Gemini AI classification needs the backend and an API key.</p>
+          <button class="btn btn-primary" id="runClassify">Classify unclassified leads</button>
+        </div>
+        <div class="card"><div class="table-wrap"><table id="classTable"></table></div></div>
+      </section>
+
+      <!-- MARKETING -->
+      <section class="view" id="view-marketing" hidden>
+        <div class="grid-2">
+          <div class="card">
+            <h2>Compose email</h2>
+            <div class="stack">
+              <label>Buyer (saved leads with an email)<select id="mLead"></select></label>
+              <label>Your company<input id="mSender" placeholder="Your company name"></label>
+              <label>Product<input id="mProduct" placeholder="e.g. hand-hammered singing bowls"></label>
+              <button class="btn" id="mGenerate">Generate personalized email</button>
+              <label>Subject<input id="mSubject"></label>
+              <label>Message<textarea id="mBody" rows="10"></textarea></label>
+              <label>Product PDF<input type="file" id="mPdf" accept="application/pdf"></label>
+              <div class="actions">
+                <button class="btn btn-primary" id="mSave">Save draft</button>
+                <button class="btn" id="mOpen">Open in my email app</button>
+              </div>
+              <p class="muted small">A browser page cannot send email by itself or attach files automatically. “Open in my email app” fills a new message; attach the PDF there. Real Gmail sending needs the Flask backend. Send only to relevant business contacts and honour unsubscribe requests.</p>
+            </div>
+          </div>
+          <div class="card"><h2>Email history</h2><div class="table-wrap"><table id="mailTable"></table></div></div>
+        </div>
+      </section>
+
+      <!-- IMPORT / EXPORT -->
+      <section class="view" id="view-importexport" hidden>
+        <div class="grid-2">
+          <div class="card">
+            <h2>Import leads from CSV</h2>
+            <p class="muted small">Headers: company_name, buyer_name, email, phone, country, state, city, website, buyer_category, product_category, source_website, lead_status. Duplicates are skipped.</p>
+            <div class="stack"><input type="file" id="csvFile" accept=".csv">
+              <div class="actions"><button class="btn btn-primary" id="csvImport">Import</button>
+              <button class="btn" id="csvTemplate">Download template</button></div></div>
+            <p id="importResult" class="small"></p>
+          </div>
+          <div class="card"><h2>Export buyer database</h2><button class="btn btn-primary" id="csvExport">Download CSV</button></div>
+        </div>
+        <div class="card"><h2>Demo sample data</h2>
+          <p class="muted small">10 fictional leads (example.com emails), labelled SAMPLE. Not real buyers.</p>
+          <div class="actions"><button class="btn btn-primary" id="sampleLoad">Load sample data</button>
+          <button class="btn btn-danger" id="sampleRemove">Remove sample data</button></div></div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view" id="view-reports" hidden>
+        <div class="grid-2">
+          <div class="card"><h2>By country</h2><div id="rCountry"></div></div>
+          <div class="card"><h2>By buyer category</h2><div id="rCategory"></div></div>
+          <div class="card"><h2>By lead status</h2><div id="rStatus"></div></div>
+          <div class="card"><h2>Email format</h2><div id="rEmail"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ADD / EDIT MODAL -->
+  <dialog id="leadDialog">
+    <form id="leadForm" class="form-grid">
+      <h2 class="full" id="dialogTitle">Add Lead</h2>
+      <label>Company name<input name="company_name"></label>
+      <label>Buyer name<input name="buyer_name"></label>
+      <label>Email<input name="email" placeholder="name@company.com"></label>
+      <label>Phone<input name="phone"></label>
+      <label>Country<input name="country"></label>
+      <label>State<input name="state"></label>
+      <label>City<input name="city"></label>
+      <label>Website<input name="website" placeholder="https://"></label>
+      <label>Buyer category<select name="buyer_category"></select></label>
+      <label>Buyer type<select name="buyer_type"><option>Unclassified</option><option>Business</option><option>Individual</option></select></label>
+      <label>Product category<input name="product_category"></label>
+      <label>Source website<input name="source_website" placeholder="e.g. Google Maps"></label>
+      <label>Lead status<select name="lead_status"></select></label>
+      <label class="full">Notes<textarea name="notes" rows="2"></textarea></label>
+      <div class="full form-actions">
+        <button class="btn btn-primary" type="submit">Save Lead</button>
+        <button class="btn" type="button" id="dialogCancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
